@@ -1,4 +1,4 @@
-package com.example.spring_gateway
+package com.example.spring_gateway.config
 
 import com.example.spring_gateway.repository.FareRecommendRepository
 import com.example.spring_gateway.repository.RedisFareRecommendRepository
