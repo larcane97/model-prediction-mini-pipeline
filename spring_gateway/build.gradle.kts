@@ -20,6 +20,16 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	// H3 Core
+	implementation("com.uber:h3:3.7.2")
+
+	// Json
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
+
+	// mockito v2
+	testImplementation("org.mockito:mockito-inline:2.13.0")
+
 }
 
 tasks.withType<KotlinCompile> {

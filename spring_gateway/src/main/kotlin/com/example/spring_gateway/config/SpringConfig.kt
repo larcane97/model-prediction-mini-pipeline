@@ -3,15 +3,22 @@ package com.example.spring_gateway.config
 import com.example.spring_gateway.repository.FareRecommendRepository
 import com.example.spring_gateway.repository.RedisFareRecommendRepository
 import com.example.spring_gateway.service.FareRecommendService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.client.RestTemplate
+
+
+
 
 @Configuration
-class SpringConfig {
+class SpringConfig(
+    @Autowired val restTemplate: RestTemplate
+) {
 
     @Bean
     fun fareRecommendService():FareRecommendService{
-        return FareRecommendService(fareRecommendRepository());
+        return FareRecommendService(fareRecommendRepository(), restTemplate);
     }
 
     @Bean

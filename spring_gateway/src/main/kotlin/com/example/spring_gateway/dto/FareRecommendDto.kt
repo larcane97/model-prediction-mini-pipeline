@@ -4,8 +4,8 @@ import com.example.spring_gateway.entity.enums.FareType
 
 class FareRecommendDto(
     var requestId:Long,
-    var org_h3:String,
-    var dst_h3:String,
+    var orgH3:String,
+    var dstH3:String,
     var distance:Long,
     var eta:Long?,
     var callCountNow:Long?,
