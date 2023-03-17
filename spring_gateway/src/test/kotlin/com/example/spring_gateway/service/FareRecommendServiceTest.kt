@@ -10,6 +10,7 @@ import com.example.spring_gateway.entity.feature.HistoricalFeature
 import com.example.spring_gateway.entity.feature.RealTimeFeature
 import com.example.spring_gateway.repository.RedisFareRecommendRepository
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,7 +24,7 @@ import org.springframework.test.web.client.response.MockRestResponseCreators.wit
 class FareRecommendServiceTest {
     private val fareRecommendRepository: RedisFareRecommendRepository =
         Mockito.mock(RedisFareRecommendRepository::class.java);
-    private val objectMapper = ObjectMapper();
+    private val objectMapper = jacksonObjectMapper();
 
     private var restTemplate = RestTemplateConfig.restTemplate();
     private var mockServer: MockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
@@ -57,7 +58,7 @@ class FareRecommendServiceTest {
             dstLot = 127.110191,
             distance = 1000,
             eta = 100,
-            fareType = FareType.NORMAL)
+            fareType = FareType.NORMAL.typeNumber)
 
         // when
         val recommendFare:FareRecommendResponse = fareRecommendService.getRecommendFare(request)
@@ -92,7 +93,7 @@ class FareRecommendServiceTest {
             dispatchCountNow = 200,
             callCountAvgDuring2Week = 150,
             dispatchCountAvgDuring2Week = 180,
-            fareType = FareType.NORMAL
+            fareType = FareType.NORMAL.typeNumber
         )
 
         val response = FareRecommendResponse(1, 10000)
@@ -117,7 +118,7 @@ class FareRecommendServiceTest {
             dstLot = 0.0,
             distance = 1000,
             eta = 10,
-            fareType = FareType.NORMAL
+            fareType = FareType.NORMAL.typeNumber
         )
         val feature = FareRecommendFeature(
             HistoricalFeature(200, 100), RealTimeFeature(20, 30)

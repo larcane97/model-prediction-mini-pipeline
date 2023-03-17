@@ -12,5 +12,5 @@ class FareRecommendDto(
     var dispatchCountNow:Long?,
     var callCountAvgDuring2Week:Long?,
     var dispatchCountAvgDuring2Week:Long?,
-    var fareType: FareType?
+    var fareType: Int?
 )

@@ -1,5 +1,6 @@
 package com.example.spring_gateway.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,11 +10,14 @@ import org.springframework.web.util.DefaultUriBuilderFactory
 
 @Configuration
 class RestTemplateConfig {
-    companion object{
+    companion object {
+        @Value("\${restTemplate.baseUrl}")
+        private val baseUrl: String = "http://test-model-server"
+
         @Bean
-        fun restTemplate():RestTemplate{
+        fun restTemplate(): RestTemplate {
             val restTemplate = RestTemplate();
-            restTemplate.uriTemplateHandler = DefaultUriBuilderFactory("http://test-model-server");
+            restTemplate.uriTemplateHandler = DefaultUriBuilderFactory(baseUrl);
             return restTemplate
         }
     }

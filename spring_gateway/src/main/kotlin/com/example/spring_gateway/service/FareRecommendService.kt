@@ -7,14 +7,18 @@ import com.example.spring_gateway.dto.response.FareRecommendResponse
 import com.example.spring_gateway.repository.FareRecommendRepository
 import com.uber.h3core.H3Core
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.postForEntity
 import java.lang.IllegalStateException
 
 class FareRecommendService(
     @Autowired val fareRecommendRepository: FareRecommendRepository,
     @Autowired val restTemplate: RestTemplate
 ) {
+    @Value("\${restTemplate.baseUrl}")
+    private val fareRecommendBaseUrl: String = ""
     private val h3Core = H3Core.newInstance()
 
     fun getRecommendFare(request: FareRecommendRequest): FareRecommendResponse {
@@ -38,12 +42,12 @@ class FareRecommendService(
 
     fun getRecommendFareFromModel(
         request: FareRecommendDto,
-        url: String = "fare/recommend"
+        url: String = "/fare/recommend"
     ): FareRecommendResponse {
         val recommendFare: ResponseEntity<FareRecommendResponse> = restTemplate.postForEntity(
-            url,
+            fareRecommendBaseUrl + url,
             request,
-            FareRecommendResponse::class.java
+            FareRecommendResponse::class
         )
         recommendFare.body?.let {
             return it

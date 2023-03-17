@@ -10,5 +10,5 @@ class FareRecommendRequest(
     var dstLot: Double,
     var distance: Long,
     var eta: Long?,
-    var fareType: FareType?
+    var fareType: Int?
 )
