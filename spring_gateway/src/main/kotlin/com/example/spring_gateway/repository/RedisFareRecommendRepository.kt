@@ -10,12 +10,14 @@ class RedisFareRecommendRepository:FareRecommendRepository {
         throw IllegalStateException("RedisRepository에서는 save를 할 수 없습니다.");
     }
 
+    // 수정 예정 : redis로부터 값 읽어오기
     override fun getHistoricalFeature(): HistoricalFeature {
-        TODO("redis에서부터 historical feature 읽어오기")
+        return HistoricalFeature(callCountAvgDuring2Week = 500, dispatchCountAvgDuring2Week = 350)
     }
 
+    // 수정 예정 : redis로부터 값 읽어오기
     override fun getRealTimeFeature(): RealTimeFeature {
-        TODO("redis에서부터 real-time feature 읽어오기")
+        return RealTimeFeature(callCountNow = 800, dispatchCountNow = 600)
     }
 
 }
