@@ -47,7 +47,7 @@ class FareRecommendServiceTest {
 
 
         val response = FareRecommendResponse(1, 10000)
-        mockServer.expect(requestTo("http://localhost:8000/fare/recommend"))
+        mockServer.expect(requestTo("http://moon-mini-project-ms/fare/recommend"))
             .andRespond(withSuccess(objectMapper.writeValueAsString(response), MediaType.APPLICATION_JSON))
 
         val request = FareRecommendRequest(
@@ -97,7 +97,7 @@ class FareRecommendServiceTest {
         )
 
         val response = FareRecommendResponse(1, 10000)
-        mockServer.expect(requestTo("http://localhost:8000/fare/recommend"))
+        mockServer.expect(requestTo("http://moon-mini-project-ms/fare/recommend"))
             .andRespond(withSuccess(objectMapper.writeValueAsString(response), MediaType.APPLICATION_JSON))
 
         // when

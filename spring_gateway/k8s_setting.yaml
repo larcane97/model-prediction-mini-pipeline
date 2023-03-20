@@ -44,7 +44,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: moon.dev.daumkakao.io
+    - host: moon-mini-project-gw.dev.daumkakao.io
       http:
         paths:
           - path: /

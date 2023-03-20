@@ -12,7 +12,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory
 class RestTemplateConfig {
     companion object {
         @Value("\${restTemplate.baseUrl}")
-        private val baseUrl: String = "http://localhost:8000"
+        private val baseUrl: String = "http://moon-mini-project-ms"
 
         @Bean
         fun restTemplate(): RestTemplate {
