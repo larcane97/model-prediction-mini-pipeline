@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mini-pipeline-model-server
+spec:
+  selector:
+    matchLabels:
+      app: mini-pipeline-model-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mini-pipeline-model-server
+    spec:
+      containers:
+        - name: mini-pipeline-model-server
+          image: idock.daumkakao.io/moon_dev/model_prediction_mini_pipeline
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mini-pipeline-ms-svc
+spec:
+  selector:
+    app: mini-pipeline-model-server
+  ports:
+    - protocol: TCP
+      targetPort: 8000
+      port: 80
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mini-pipeline-ms-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: moon-mini-project-ms.dev.daumkakao.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: mini-pipeline-ms-svc
+              servicePort: 80
