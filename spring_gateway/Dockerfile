@@ -1,6 +1,6 @@
 FROM adoptopenjdk/openjdk11
 
-ADD . /application
+ADD spring_gateway/. /application
 WORKDIR /application
 RUN ./gradlew clean build
 WORKDIR /application/build/libs
