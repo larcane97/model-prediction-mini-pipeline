@@ -17,8 +17,6 @@ class FareRecommendService(
     @Autowired val fareRecommendRepository: FareRecommendRepository,
     @Autowired val restTemplate: RestTemplate
 ) {
-    @Value("\${restTemplate.baseUrl}")
-    private val fareRecommendBaseUrl: String = ""
     private val h3Core = H3Core.newInstance()
 
     fun getRecommendFare(request: FareRecommendRequest): FareRecommendResponse {
@@ -45,7 +43,7 @@ class FareRecommendService(
         url: String = "/fare/recommend"
     ): FareRecommendResponse {
         val recommendFare: ResponseEntity<FareRecommendResponse> = restTemplate.postForEntity(
-            fareRecommendBaseUrl + url,
+            url,
             request,
             FareRecommendResponse::class
         )

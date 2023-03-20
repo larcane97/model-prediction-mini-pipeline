@@ -8,19 +8,28 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.web.client.MockRestServiceServer
+import org.springframework.test.web.client.match.MockRestRequestMatchers
+import org.springframework.test.web.client.response.MockRestResponseCreators
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.web.client.RestTemplate
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class SpringGatewayApplicationTests(
-    @Autowired val mockMvc: MockMvc
+    @Autowired val mockMvc: MockMvc,
+    @Autowired val restTemplate:RestTemplate
 ) {
     private val objectMapper = jacksonObjectMapper();
+    private var mockServer: MockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
+    @Value("\${restTemplate.baseUrl}")
+    private val fareRecommendBaseUrl: String = ""
 
     @Test
     fun contextLoads() {
@@ -40,6 +49,16 @@ class SpringGatewayApplicationTests(
             fareType = FareType.NORMAL.typeNumber
         )
         val uri: String = "/fare/recommend"
+
+        val expectedResponse = FareRecommendResponse(1, 10000)
+        mockServer.expect(MockRestRequestMatchers.requestTo(fareRecommendBaseUrl+uri))
+            .andRespond(
+                MockRestResponseCreators.withSuccess(
+                    objectMapper.writeValueAsString(expectedResponse),
+                    MediaType.APPLICATION_JSON
+                )
+            )
+
 
         // when
         val response = mockMvc.perform(
