@@ -8,4 +8,4 @@ RUN pip3 install --upgrade pip && \
 
 EXPOSE 8000
 
-ENTRYPOINT ["python3","-m","uvicorn","model_server:app","--reload"]
+ENTRYPOINT ["python3","-m","uvicorn","model_server:app","--reload","--host","0.0.0.0"]
