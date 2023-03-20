@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: mini-pipeline-gateway
-          image: idock.daumkakao.io/moon_dev/model_prediction_mini_pipeline
+          image: idock.daumkakao.io/moon_dev/model_prediction_mini_pipeline:gw_latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
