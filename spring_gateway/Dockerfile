@@ -4,5 +4,5 @@ ADD . /application
 WORKDIR /application
 RUN ./gradlew clean build
 WORKDIR /application/build/libs
-ENTRYPOINT ["sh", "-c", "java -jar hello-spring-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar spring_gateway-0.0.1-SNAPSHOT.jar"]
 EXPOSE 8080
