@@ -25,6 +25,7 @@ class FareRecommendServiceTest {
     private val fareRecommendRepository: RedisFareRecommendRepository =
         Mockito.mock(RedisFareRecommendRepository::class.java);
     private val objectMapper = jacksonObjectMapper();
+    private val mockUrl: String = "http://mini-pipeline-ms-svc:80/fare/recommend"
 
     private var restTemplate = RestTemplateConfig.restTemplate();
     private var mockServer: MockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
@@ -47,7 +48,7 @@ class FareRecommendServiceTest {
 
 
         val response = FareRecommendResponse(1, 10000)
-        mockServer.expect(requestTo("http://moon-mini-project-ms/fare/recommend"))
+        mockServer.expect(requestTo(mockUrl))
             .andRespond(withSuccess(objectMapper.writeValueAsString(response), MediaType.APPLICATION_JSON))
 
         val request = FareRecommendRequest(
@@ -97,7 +98,7 @@ class FareRecommendServiceTest {
         )
 
         val response = FareRecommendResponse(1, 10000)
-        mockServer.expect(requestTo("http://moon-mini-project-ms/fare/recommend"))
+        mockServer.expect(requestTo(mockUrl))
             .andRespond(withSuccess(objectMapper.writeValueAsString(response), MediaType.APPLICATION_JSON))
 
         // when
