@@ -97,7 +97,7 @@ class FareRecommendServiceTest {
         )
 
         val response = FareRecommendResponse(1, 10000)
-        mockServer.expect(requestTo("http://test-model-server/fare/recommend"))
+        mockServer.expect(requestTo("http://localhost:8000/fare/recommend"))
             .andRespond(withSuccess(objectMapper.writeValueAsString(response), MediaType.APPLICATION_JSON))
 
         // when
