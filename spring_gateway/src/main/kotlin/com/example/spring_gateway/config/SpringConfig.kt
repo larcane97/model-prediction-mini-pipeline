@@ -12,15 +12,7 @@ import org.springframework.web.client.RestTemplate
 
 
 @Configuration
-class SpringConfig(
-    @Autowired val restTemplate: RestTemplate
-) {
-
-    @Bean
-    fun fareRecommendService():FareRecommendService{
-        return FareRecommendService(fareRecommendRepository(), restTemplate);
-    }
-
+class SpringConfig{
     @Bean
     fun fareRecommendRepository(): FareRecommendRepository{
         return RedisFareRecommendRepository();

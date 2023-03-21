@@ -21,9 +21,11 @@ spec:
           env:
             - name: JAVA_TOOL_OPTIONS
               value: >
+                –Dspring.profiles.active=dev
                 -javaagent:/share-vol/apm/apm.agent.jar
                 -Dapm_application_key=b3928f93708449e5b497d88d5971af7d
                 -Dapm_collector_address=apm-collector.onkakao.net
+                -Dsentry.dsn=https://b3928f93708449e5b497d88d5971af7d@aem-ingest.onkakao.net/18647
           volumeMounts:
             - name: share-vol
               mountPath: /share-vol
