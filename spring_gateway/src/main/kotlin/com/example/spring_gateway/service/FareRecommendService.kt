@@ -4,18 +4,18 @@ import com.example.spring_gateway.dto.FareRecommendDto
 import com.example.spring_gateway.entity.feature.FareRecommendFeature
 import com.example.spring_gateway.dto.request.FareRecommendRequest
 import com.example.spring_gateway.dto.response.FareRecommendResponse
+import com.example.spring_gateway.entity.error.IllegalMSResponseException
+import com.example.spring_gateway.entity.error.MSConnectionException
 import com.example.spring_gateway.repository.FareRecommendRepository
 import com.uber.h3core.H3Core
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForEntity
-import java.lang.IllegalStateException
-
+@Service
 class FareRecommendService(
-    @Autowired val fareRecommendRepository: FareRecommendRepository,
-    @Autowired val restTemplate: RestTemplate
+    @Autowired val fareRecommendRepository: FareRecommendRepository, @Autowired val restTemplate: RestTemplate
 ) {
     private val h3Core = H3Core.newInstance()
 
@@ -39,26 +39,21 @@ class FareRecommendService(
     }
 
     fun getRecommendFareFromModel(
-        request: FareRecommendDto,
-        url: String = "/fare/recommend"
+        request: FareRecommendDto, url: String = "/fare/recommend"
     ): FareRecommendResponse {
-        val recommendFare: ResponseEntity<FareRecommendResponse> = restTemplate.postForEntity(
-            url,
-            request,
-            FareRecommendResponse::class
-        )
-        recommendFare.body?.let {
-            return it
+        return try {
+            val recommendFare: ResponseEntity<FareRecommendResponse> = restTemplate.postForEntity(
+                url, request, FareRecommendResponse::class
+            )
+            recommendFare.body ?: throw IllegalMSResponseException()
+        } catch (e: Exception) {
+            throw MSConnectionException()
         }
-        throw IllegalStateException("모델의 반환값을 확인할 수 없습니다.")
     }
 
     // 이후 mapper로 대체예정
     fun getFareRecommendDto(
-        request: FareRecommendRequest,
-        orgH3: String,
-        dstH3: String,
-        feature: FareRecommendFeature
+        request: FareRecommendRequest, orgH3: String, dstH3: String, feature: FareRecommendFeature
     ): FareRecommendDto {
         return FareRecommendDto(
             requestId = request.requestId,

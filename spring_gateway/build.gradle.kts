@@ -21,11 +21,17 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+	// aspect
+	implementation("org.springframework.boot:spring-boot-starter-aop:2.7.9")
+
 	// H3 Core
 	implementation("com.uber:h3:3.7.2")
 
 	// Json
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
+
+	// matrix AEM : sentry
+	implementation("io.sentry:sentry-logback:6.5.0")
 
 	// mockito v2
 	testImplementation("org.mockito:mockito-inline:2.13.0")
