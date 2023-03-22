@@ -3,8 +3,10 @@ package com.example.spring_gateway.repository
 import com.example.spring_gateway.entity.feature.FareRecommendFeature
 import com.example.spring_gateway.entity.feature.HistoricalFeature
 import com.example.spring_gateway.entity.feature.RealTimeFeature
+import org.springframework.stereotype.Repository
 import java.lang.IllegalStateException
 
+@Repository
 class RedisFareRecommendRepository:FareRecommendRepository {
     override fun save(fareRecommendFeature: FareRecommendFeature) {
         throw IllegalStateException("RedisRepository에서는 save를 할 수 없습니다.");

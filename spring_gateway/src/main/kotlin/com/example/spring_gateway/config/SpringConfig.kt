@@ -13,8 +13,5 @@ import org.springframework.web.client.RestTemplate
 
 @Configuration
 class SpringConfig{
-    @Bean
-    fun fareRecommendRepository(): FareRecommendRepository{
-        return RedisFareRecommendRepository();
-    }
+
 }
