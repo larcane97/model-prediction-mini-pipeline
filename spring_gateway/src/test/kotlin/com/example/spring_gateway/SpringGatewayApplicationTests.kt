@@ -27,6 +27,7 @@ class SpringGatewayApplicationTests(
     @Autowired val restTemplate:RestTemplate
 ) {
     private val objectMapper = jacksonObjectMapper();
+    private val originalRequestFactory = restTemplate.requestFactory
     private var mockServer: MockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
     @Value("\${restTemplate.baseUrl}")
     private val fareRecommendBaseUrl: String = ""
@@ -61,15 +62,30 @@ class SpringGatewayApplicationTests(
 
 
         // when
-        val response = mockMvc.perform(
+        val response1 = mockMvc.perform(
             MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)).accept(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.status().isOk).andReturn().response.contentAsString
 
-        val recommmendFare: FareRecommendResponse = objectMapper.readValue(response)
+        val recommendFare1: FareRecommendResponse = objectMapper.readValue(response1)
 
         // then
-        assertThat(recommmendFare.requestId).isEqualTo(1)
+        assertThat(recommendFare1.requestId).isEqualTo(1)
+
+        // when : check DEFAULT variable
+        restTemplate.requestFactory = originalRequestFactory
+
+        // then
+        val response2 = mockMvc.perform(
+            MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)).accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isOk).andReturn().response.contentAsString
+
+        val recommendFare2: FareRecommendResponse = objectMapper.readValue(response2)
+
+        assertThat(recommendFare2.requestId).isEqualTo(1)
+        assertThat(recommendFare2.recommendFare).isEqualTo(1000) // 1000 is default recommend fare.
+
     }
 
 }
