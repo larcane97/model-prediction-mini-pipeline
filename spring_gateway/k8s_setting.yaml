@@ -19,9 +19,10 @@ spec:
           ports:
             - containerPort: 8080
           env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: dev
             - name: JAVA_TOOL_OPTIONS
               value: >
-                –Dspring.profiles.active=dev
                 -javaagent:/share-vol/apm/apm.agent.jar
                 -Dapm_application_key=b3928f93708449e5b497d88d5971af7d
                 -Dapm_collector_address=apm-collector.onkakao.net
