@@ -1,6 +1,6 @@
 package com.example.spring_gateway.dto.response
 
-class FareRecommendResponse(
-    var requestId:Long,
-    var recommendFare:Long
+data class FareRecommendResponse(
+    val requestId:Long,
+    val recommendFare:Long
 )
