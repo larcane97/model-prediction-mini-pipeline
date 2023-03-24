@@ -1,18 +1,18 @@
 package com.example.spring_gateway
 
-import com.example.spring_gateway.config.RestTemplateConfig
 import com.example.spring_gateway.dto.request.FareRecommendRequest
 import com.example.spring_gateway.dto.response.FareRecommendResponse
 import com.example.spring_gateway.entity.enums.FareType
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.http.MediaType
 import org.springframework.test.web.client.MockRestServiceServer
 import org.springframework.test.web.client.match.MockRestRequestMatchers
@@ -26,16 +26,12 @@ import org.springframework.web.client.RestTemplate
 @AutoConfigureMockMvc
 class SpringGatewayApplicationTests(
     @Autowired val mockMvc: MockMvc,
-    @Autowired var restTemplate:RestTemplate
+    @Autowired val restTemplate:RestTemplate
 ) {
     private val objectMapper = jacksonObjectMapper();
     private val originalRequestFactory = restTemplate.requestFactory
     @Value("\${restTemplate.baseUrl}")
     private val fareRecommendBaseUrl: String = ""
-
-    @Test
-    fun contextLoads() {
-    }
 
     @Test
     fun getRecommendFare() {

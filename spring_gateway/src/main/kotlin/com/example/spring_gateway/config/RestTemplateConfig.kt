@@ -10,15 +10,14 @@ import org.springframework.web.util.DefaultUriBuilderFactory
 
 @Configuration
 class RestTemplateConfig {
-    companion object {
-        @Value("\${restTemplate.baseUrl}")
-        private val baseUrl: String = "http://mini-pipeline-ms-svc:80"
+    @Value("\${restTemplate.baseUrl}")
+    private val baseUrl: String = "http://mini-pipeline-ms-svc:80"
 
-        @Bean
-        fun restTemplate(): RestTemplate {
-            val restTemplate = RestTemplate();
-            restTemplate.uriTemplateHandler = DefaultUriBuilderFactory(baseUrl);
-            return restTemplate
-        }
+    @Bean
+    fun restTemplate(): RestTemplate {
+        val restTemplate = RestTemplate();
+        restTemplate.uriTemplateHandler = DefaultUriBuilderFactory(baseUrl);
+        return restTemplate
+
     }
 }
