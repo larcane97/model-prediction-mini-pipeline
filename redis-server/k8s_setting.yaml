@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mini-pipeline-redis-server
+spec:
+  selector:
+    matchLabels:
+      app: mini-pipeline-redis-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mini-pipeline-redis-server
+    spec:
+      containers:
+        - name: mini-pipeline-redis-server
+          image: redis:latest
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mini-pipeline-redis-server-svc
+spec:
+  selector:
+    app: mini-pipeline-redis-server
+  ports:
+    - protocol: TCP
+      targetPort: 6379
+      port: 6379
+
+---
+
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name : mini-pipeline-redis-data-server
+spec:
+  selector:
+    matchLabels:
+      app: mini-pipeline-redis-data-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mini-pipeline-redis-data-server
+    spec:
+      containers:
+        - name: mini-pipeline-redis-data-server
+          image: larcane97/redis-data-server:latest
+          imagePullPolicy: Always
+          env:
+            - name: REDIS_SERVER_ADDRESS
+              value: mini-pipeline-redis-server-svc
