@@ -3,6 +3,7 @@ import os
 import datetime
 import random
 import zoneinfo
+import logging
 
 import redis
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -14,20 +15,20 @@ sched = BlockingScheduler()
 hcode_list = get_all_h3_code()
 
 
-@sched.scheduled_job("cron", minute="0,10,20,30,40,50", id="push_realtime_feature")
 def push_realtime_feature_into_redis():
     current_time = get_current_time()
     time_key = create_time_key(current_time, "realtime")
 
     put_data_into_redis(time_key)
+    logging.info(f"{current_time} finish to put realtime feature")
 
 
-@sched.scheduled_job("cron", minute="0", id="push_historical_feature")
 def push_historical_feature_into_redis():
     current_time = get_current_time()
     time_key = create_time_key(current_time, "historical")
 
     put_data_into_redis(time_key)
+    logging.info(f"{current_time} finish to put historical feature")
 
 
 def put_data_into_redis(time_key):
@@ -42,21 +43,28 @@ def put_data_into_redis(time_key):
 
 def put_prev_data_into_redis():
     now = get_current_time()
-    time = datetime.datetime(now.year, now.month, now.day, 0, 0, 0, tzinfo=zoneinfo.ZoneInfo("Asia/Seoul"))
+    historical_time = now - datetime.timedelta(days=14)
+    realtime_time = now - datetime.timedelta(minutes=10)
+
+    realtime_time_key = create_time_key(realtime_time, "realtime")
+    put_data_into_redis(realtime_time_key)
 
     while True:
-        time += datetime.timedelta(minutes=10)
-        if time > now:
+        historical_time += datetime.timedelta(hours=1)
+        if historical_time > now:
             break
 
-        realtime_time_key = create_time_key(time, "realtime")
-        put_data_into_redis(realtime_time_key)
-
-        if time.minute == 0:
-            historical_time_key = create_time_key(time, "historical")
-            put_data_into_redis(historical_time_key)
+        historical_time_key = create_time_key(historical_time, "historical")
+        put_data_into_redis(historical_time_key)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(format='%(levelno)s %(message)s', level=logging.INFO)
     put_prev_data_into_redis()
+    current_time = get_current_time()
+    logging.info(f"{current_time} finish put prev data")
+    sched.add_job(push_historical_feature_into_redis, "cron", minute="0", hour="*",
+                  timezone=zoneinfo.ZoneInfo("Asia/Seoul"))
+    sched.add_job(push_realtime_feature_into_redis, "cron", minute="0,10,20,30,40,50", hour="*",
+                  timezone=zoneinfo.ZoneInfo("Asia/Seoul"))
     sched.start()

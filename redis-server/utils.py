@@ -31,8 +31,8 @@ def get_all_h3_code():
 
     # H3 res7 코드 생성
     hexagons = set()
-    for lat in range(int(min_lat * 10), int(max_lat * 10)):
-        for lng in range(int(min_lng * 10), int(max_lng * 10)):
-            hexagons.add(h3.geo_to_h3(lat / 10, lng / 10, 7))
+    for lat in range(int(min_lat * 100), int(max_lat * 100)):
+        for lng in range(int(min_lng * 100), int(max_lng * 100)):
+            hexagons.add(h3.geo_to_h3(lat / 100, lng / 100, 7))
 
     return hexagons
