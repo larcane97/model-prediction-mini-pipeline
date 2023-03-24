@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Aspect
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.lang.IllegalStateException
 
 @Aspect
 @Component
@@ -22,7 +23,13 @@ class RedisRepositoryLoggingAop {
         return try {
             pjp.proceed();
         } catch (ex: Exception) {
-            throw FeatureReadException(featureType = "historical", key = (pjp.args[0]).toString())
+            val args = pjp.args
+            if (args != null && args.isNotEmpty() && args[0] is List<*>) {
+                val keys = args[0] as List<*>
+                val key = keys[0].toString()
+                throw FeatureReadException(featureType = "historical", key = key)
+            } else
+                throw FeatureReadException(featureType = "historical", key = "NOKEY")
         }
     }
 

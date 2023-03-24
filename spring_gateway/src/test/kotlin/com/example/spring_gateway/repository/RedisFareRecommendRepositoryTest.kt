@@ -48,6 +48,7 @@ class RedisFareRecommendRepositoryTest(
             assertThrows<FeatureReadException> { fareRecommendRepository.getHistoricalFeature(historicalKey2) }
         // then
         assertThat(exception.featureType).isEqualTo("historical")
+        assertThat(exception.key.take(6)).isEqualTo("NO-KEY")
 
     }
 
