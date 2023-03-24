@@ -9,8 +9,6 @@ data class FareRecommendDto(
     val distance:Long,
     val eta:Long?,
     val callCountNow:Long?,
-    val dispatchCountNow:Long?,
-    val callCountAvgDuring2Week:Long?,
-    val dispatchCountAvgDuring2Week:Long?,
+    val callCountAvg:Long?,
     val fareType: Int?
 )

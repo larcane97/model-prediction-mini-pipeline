@@ -6,6 +6,6 @@ WORKDIR /application
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
-ENV REDIS_SERVER_ADDRESS "redis-test"
+ENV REDIS_SERVER_ADDRESS "redis"
 
 ENTRYPOINT ["python3","main.py"]

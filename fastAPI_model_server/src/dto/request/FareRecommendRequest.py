@@ -8,7 +8,5 @@ class FareRecommendRequest(BaseModel):
     distance: int
     eta: int
     callCountNow: int
-    dispatchCountNow: int
-    callCountAvgDuring2Week: int
-    dispatchCountAvgDuring2Week: int
+    callCountAvg: int
     fareType: int

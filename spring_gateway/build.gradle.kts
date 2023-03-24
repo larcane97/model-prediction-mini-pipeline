@@ -33,6 +33,9 @@ dependencies {
 	// matrix AEM : sentry
 	implementation("io.sentry:sentry-logback:6.5.0")
 
+	// redis
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
 	// mockito v2
 	testImplementation("org.mockito:mockito-inline:2.13.0")
 
