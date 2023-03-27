@@ -83,7 +83,7 @@ class SpringGatewayApplicationTests(
         val recommendFare2: FareRecommendResponse = objectMapper.readValue(response2)
 
         assertThat(recommendFare2.requestId).isEqualTo(1)
-        assertThat(recommendFare2.recommendFare).isEqualTo(1000) // 1000 is default recommend fare.
+        assertThat(recommendFare2.recommendFare).isEqualTo(10000L) // 10000 is default recommend fare.
 
     }
 

@@ -1,11 +1,13 @@
 package com.example.spring_gateway.service
 
 import com.example.spring_gateway.component.KeyGenerator
+import com.example.spring_gateway.component.geoMapper.H3GeoMapper
 import com.example.spring_gateway.config.RestTemplateConfig
 import com.example.spring_gateway.dto.FareRecommendDto
 import com.example.spring_gateway.dto.request.FareRecommendRequest
 import com.example.spring_gateway.dto.response.FareRecommendResponse
 import com.example.spring_gateway.entity.enums.FareType
+import com.example.spring_gateway.entity.exception.FeatureReadException
 import com.example.spring_gateway.entity.feature.FareRecommendFeature
 import com.example.spring_gateway.entity.feature.HistoricalFeature
 import com.example.spring_gateway.entity.feature.RealTimeFeature
@@ -13,12 +15,12 @@ import com.example.spring_gateway.repository.FareRecommendRepository
 import com.example.spring_gateway.repository.RedisFareRecommendRepository
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-
 import org.mockito.Mockito
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.EnableAspectJAutoProxy
+import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ValueOperations
 import org.springframework.http.MediaType
 import org.springframework.test.web.client.MockRestServiceServer
 import org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
@@ -26,23 +28,42 @@ import org.springframework.test.web.client.response.MockRestResponseCreators.wit
 import org.springframework.web.client.RestTemplate
 
 @SpringBootTest
-class FareRecommendServiceTest(
-    @Autowired val fareRecommendService: FareRecommendService,
-    @Autowired val restTemplate: RestTemplate
-) {
+class FareRecommendServiceImplTest {
     private val objectMapper = jacksonObjectMapper();
-    private var mockServer: MockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
-    private val mockUrl = restTemplate.uriTemplateHandler.expand("/").toString() + "fare/recommend"
 
-    @BeforeEach
-    fun beforeEach() {
-        mockServer = MockRestServiceServer.createServer(restTemplate);
+    private val opsForValueMock = Mockito.mock(ValueOperations::class.java) as ValueOperations<String, Any>
+    private val redisTemplateMock = Mockito.mock(RedisTemplate::class.java)
+    private val fareRecommendRepository: FareRecommendRepository =
+        RedisFareRecommendRepository(redisTemplateMock as RedisTemplate<String, Any>)
+    private val restTemplate: RestTemplate = RestTemplateConfig().restTemplate()
+    private val keyGenerator = KeyGenerator()
+    private val geoMapper = H3GeoMapper()
+    private val fareRecommendService: FareRecommendServiceImpl =
+        FareRecommendServiceImpl(fareRecommendRepository, restTemplate, keyGenerator, geoMapper)
+
+    fun redisTemplateMocking() {
+        Mockito.`when`(redisTemplateMock.opsForValue()).thenReturn(opsForValueMock)
+        Mockito.`when`(redisTemplateMock.opsForValue().multiGet(Mockito.anyList())).thenAnswer {
+            val keys = it.arguments[0] as List<String>
+            if (keys == listOf("NO-KEY")) throw FeatureReadException("historical", key = "NO-KEY")
+            else listOf(10, 10)
+
+        }
+
+        Mockito.`when`(redisTemplateMock.opsForValue().get(Mockito.anyString())).thenAnswer {
+            val keys = it.arguments[0] as String
+            if (keys == "NO-KEY") throw FeatureReadException("realtime", key = "NO-KEY")
+            else 10
+        }
     }
 
     @Test
     fun getRecommendFare() {
         // given
-        val fareRecommendRepository = Mockito.mock(FareRecommendRepository::class.java)
+        val mockServer: MockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
+        val mockUrl = restTemplate.uriTemplateHandler.expand("/").toString() + "fare/recommend"
+        redisTemplateMocking()
+
         val request = FareRecommendRequest(
             requestId = 1,
             orgLat = 37.394196,
@@ -53,15 +74,6 @@ class FareRecommendServiceTest(
             eta = 100,
             fareType = FareType.NORMAL.typeNumber
         )
-        val hcode = fareRecommendService.mapToH3(request.orgLat, request.orgLot)
-        val historicalKey = fareRecommendService.keyGenerator.generateHistoricalKey(hcode)
-        val realtimeKey = fareRecommendService.keyGenerator.generateRealtimeKey(hcode)
-
-        Mockito.`when`(fareRecommendRepository.getRealtimeFeature(realtimeKey))
-            .thenReturn(RealTimeFeature(callCountNow = 100))
-        Mockito.`when`(fareRecommendRepository.getHistoricalFeature(historicalKey))
-            .thenReturn(HistoricalFeature(callCountAvg = 150))
-
 
         val response = FareRecommendResponse(1, 10000)
         mockServer.expect(requestTo(mockUrl))
@@ -75,41 +87,34 @@ class FareRecommendServiceTest(
     }
 
     @Test
-    fun mapToH3() {
+    fun getFareRecommendFeature() {
+        redisTemplateMocking()
+
         // given
-        val lat: Double = 37.394196;
-        val lot: Double = 127.110191;
-
+        val historicalKey2 = listOf("HISTORICAL_TEST")
+        val realtimeKey2 = "REALTIME_TEST"
         // when
-        val result = fareRecommendService.mapToH3(lat, lot)
-
-        //then
-        assertThat(result).isEqualTo("8730e1534ffffff")
+        val fareRecommendFeature2 = fareRecommendService.getFareRecommendFeature(historicalKey2, realtimeKey2)
+        // then
+        assertThat(fareRecommendFeature2.historicalFeature.callCountAvg).isEqualTo(10)
+        assertThat(fareRecommendFeature2.realTimeFeature.callCountNow).isEqualTo(10)
     }
 
     @Test
     fun getRecommendFareFromModel() {
-        // given
-        val request = FareRecommendDto(
-            requestId = 1,
-            orgH3 = "8730e1534ffffff",
-            dstH3 = "8730e1534ffffff",
-            distance = 1000,
-            eta = 10,
-            callCountNow = 100,
-            callCountAvg = 150,
-            fareType = FareType.NORMAL.typeNumber
-        )
-
+        val mockServer: MockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
+        val mockUrl = restTemplate.uriTemplateHandler.expand("/").toString() + "fare/recommend"
         val response = FareRecommendResponse(1, 10000)
         mockServer.expect(requestTo(mockUrl))
             .andRespond(withSuccess(objectMapper.writeValueAsString(response), MediaType.APPLICATION_JSON))
 
-        // when
-        val recommendFareFromModel = fareRecommendService.getRecommendFareFromModel(request, url = "/fare/recommend")
-
+        // case1. 정상
+        // given
+        val featureDto1 = FareRecommendDto(1, "TEST", "TEST", 1000, 100, 10, 10, FareType.NORMAL.typeNumber)
+        //when
+        val fareRecommend1 = fareRecommendService.getRecommendFareFromModel(featureDto1, "/fare/recommend")
         // then
-        assertThat(recommendFareFromModel.requestId).isEqualTo(response.requestId)
+        assertThat(fareRecommend1.requestId).isEqualTo(1)
     }
 
     @Test
