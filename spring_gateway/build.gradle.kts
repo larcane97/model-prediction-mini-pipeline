@@ -36,6 +36,10 @@ dependencies {
 	// redis
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
+	// swagger-doc
+	implementation("org.springdoc:springdoc-openapi-ui:1.6.15")
+	implementation("org.springdoc:springdoc-openapi-kotlin:1.6.15")
+
 	// mockito v2
 	testImplementation("org.mockito:mockito-inline:2.13.0")
 
