@@ -12,7 +12,7 @@ from utils import get_all_h3_code, get_current_time, create_time_key, create_key
 
 redis_server_address = os.environ["REDIS_SERVER_ADDRESS"]
 REALTIME_FEATURE_TTL = 60*60*24
-HISTORICAL_FEATURE_TTL = 60*60*24*14
+HISTORICAL_FEATURE_TTL = 60*60*24*15
 sched = BlockingScheduler()
 hcode_list = get_all_h3_code()
 
@@ -48,7 +48,7 @@ def put_data_into_redis(time_key, expire_time):
 
 def put_prev_data_into_redis():
     now = get_current_time()
-    historical_time = now - datetime.timedelta(days=14)
+    historical_time = now - datetime.timedelta(days=15)
     realtime_time = now - datetime.timedelta(minutes=10)
 
     realtime_time_key = create_time_key(realtime_time, "realtime")
